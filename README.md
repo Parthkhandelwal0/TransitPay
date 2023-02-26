@@ -1,3 +1,3 @@
 # HackRU
-##Frontend app## 
+## Frontend app 
 https://github.com/Parthkhandelwal0/HackRuFrontend

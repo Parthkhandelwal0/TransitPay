@@ -16,10 +16,10 @@ const dataSchema = new mongoose.Schema({
         type: Number
     },
     inStation:{
-        type: String
+        type: Number
     },
     outStation:{
-        type: String
+        type: Number
     },
     isInside:{
         type:Boolean

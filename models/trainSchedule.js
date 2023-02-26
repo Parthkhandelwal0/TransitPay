@@ -7,6 +7,7 @@ const trainScheduleSchema = new mongoose.Schema({
     },
     station: {
         type: String
+        
     },
     timestamp:{
         type: Number

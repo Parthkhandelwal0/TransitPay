@@ -20,31 +20,35 @@ const router = express.Router()
 async function checkout(user,outTime,trainId){
     //isInside false
 
-        const station = Schedule.findOne({trainId:trainId,timestamp:outTime})
+        const station = await Schedule.findOne({timestamp:outTime})
         const outStationId = station.stationId
         const outStation = Station.findOne({stationId:outStationId})
-        const outStationName = outStation.stationName
+        // const outStationName = outStation.stationName
     
-        const insideStation = Data.findOne({userId:user,isInside:True})
-        const inStation = insideStation.inStation
-        Data.findOneAndUpdate({userId:user,isInside:true},{$set:{isInside:false,outStation:outStationName,outTime:outTime}},{new: true},(err,doc)=>{
+        const insideStation = await Data.findOne({userId:user})
+        console.log(insideStation.inStation)
+        const inStationId = insideStation.inStation
+
+        // const inStation = insideStation.inStationId
+        Data.findOneAndUpdate({userId:user,isInside:true},{$set:{isInside:false,outStation:outStationId,outTime:outTime}},{new: true},(err,doc)=>{
             if (err) {
                 console.log(err.message);
             }
             }) 
-     const noOfStations = Math.abs(inStation-outStationId)
+     const noOfStations = Math.abs(inStationId-outStationId)
+     console.log(noOfStations)
      const price = noOfStations*2
-     processPay(user,price)
-     res.send(outStation,price)
+     console.log(price)
+     processPay(user,price)     
 }
 
 async function processPay(user,price){
-    Wallet.findOne
+    // Wallet.findOne
     const wallet = await Wallet.findOne({userId:user})
     const walletBalance = wallet.walletBalance
     const newBalance = walletBalance-price
     if(newBalance<0){
-        res.send("Insufficient Balance")
+        console.log("Insufficient Balance")
     }
     else{
         Wallet.findOneAndUpdate({userId:user},{$set:{walletBalance:(newBalance)}},{new: true},(err,doc)=>{
@@ -59,8 +63,9 @@ async function processPay(user,price){
 
 async function checkin(user,inTime,trainId){
     //evaluate station getting corresponding stationId from station model
-   const station = Schedule.findOne({trainId:trainId,timestamp:inTime})
+   const station = await Schedule.findOne({timestamp:inTime})
    const inStationId = station.stationId
+   console.log(inStationId)
    const inStation = Station.findOne({stationId:inStationId})
    const inStationName = inStation.stationName   
 
@@ -70,9 +75,11 @@ async function checkin(user,inTime,trainId){
             inTime:  inTime,
             trainId: trainId,
             isInside: true,
-            inStation:inStationName
+            inStation:inStationId
         })
         const data = await newData.save()
+
+        return inStationId
 }
 
 
@@ -93,18 +100,18 @@ router.post('/ping', jsonParser, async(req, res) => {
         if(isUser.isInside){
             console.log("found")
             checkout(user,timestamp,trainId)
+            res.send("checkout complete")
+
         }
-      
-        //reroute to checkout
-    }
+          }
     else{
-        checkin(user,timestamp,trainId)
+     checkin(user,timestamp,trainId)
+     res.send("checkin complete")
     }
     }
     catch(err){
         console.log(err)
     }
-    res.send(req.body)
 
 })
 
@@ -121,7 +128,7 @@ router.post('/doors',jsonParser, async(req,res)=>{
                 console.log(err.message);
             }
             }) 
-    const count = await Schedule.count({trainId:trainId})
+    const count = await Data.count({isInside:true})
     console.log(count)
 
     
@@ -183,27 +190,6 @@ router.post('/passenger',jsonParser, async(req, res) => {
     const passenger = await newPassenger.save()
     res.send(passenger)
 
-})
-router.post('/checkout', (req, res) => {
-    res.send('Get checkout API')
-})
-router.post('/checkout', (req, res) => {
-    res.send('Get checkout API')
-})
-
-//Get by ID Method
-router.get('/doors', (req, res) => {
-    res.send('Get by ID API')
-})
-
-//Update by ID Method
-router.patch('/update/:id', (req, res) => {
-    res.send('Update by ID API')
-})
-
-//Delete by ID Method
-router.delete('/delete/:id', (req, res) => {
-    res.send('Delete by ID API')
 })
 
 module.exports = router;

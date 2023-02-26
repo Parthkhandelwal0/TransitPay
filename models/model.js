@@ -1,13 +1,28 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
-    name: {
-        required: true,
+    userId: {
+        type:Number,
+        unique: false
+    },
+
+    trainId: {
+        type: Number
+    },
+    inTime:{
+        type: Number
+    },
+    outTime:{
+        type: Number
+    },
+    inStation:{
         type: String
     },
-    age: {
-        required: true,
-        type: Number
+    outStation:{
+        type: String
+    },
+    isInside:{
+        type:Boolean
     }
 })
 

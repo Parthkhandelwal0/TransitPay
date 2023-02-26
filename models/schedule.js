@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const trainScheduleSchema = new mongoose.Schema({
+const scheduleSchema = new mongoose.Schema({
     trainId: {
         // required: true,
         type: String
     },
-    station: {
+    stationId: {
         type: String
     },
     timestamp:{
@@ -13,4 +13,4 @@ const trainScheduleSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('TrainSchedule', trainScheduleSchema)
+module.exports = mongoose.model('Schedule', scheduleSchema)
